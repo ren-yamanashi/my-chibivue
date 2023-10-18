@@ -3,7 +3,7 @@ import { createApp, h } from "chibivue";
 const app = createApp({
   render() {
     return h("div", {}, [
-      h("p", {}, ["Hello world."]),
+      h("p", { style: "color: red; font-weight: bold;" }, ["Hello world."]),
       h(
         "button",
         {
