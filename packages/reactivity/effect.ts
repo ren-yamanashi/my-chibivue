@@ -1,4 +1,4 @@
-import { Dep, createDep } from "./dep";
+import { Dep, createDep } from "./deps";
 
 type KeyToDepMap = Map<any, Dep>;
 
@@ -20,6 +20,7 @@ export class ReactiveEffect<T = any> {
 }
 
 export function track(target: object, key: unknown) {
+  // NOTE: targetにしたいオブジェクトが、すでにtargetMapに登録されていなければ、新しくtargetMapを作成する
   let depsMap = targetMap.get(target);
   if (!depsMap) {
     targetMap.set(target, (depsMap = new Map()));
@@ -40,6 +41,7 @@ export function trigger(target: object, key?: unknown) {
   const depsMap = targetMap.get(target);
   if (!depsMap) return;
 
+  // NOTE: 実行したい作用を取り出して、実行する
   const dep = depsMap.get(key);
 
   if (dep) {
