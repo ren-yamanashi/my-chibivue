@@ -8,10 +8,10 @@ const app = createApp({
     };
 
     return function render() {
-      return h("div", { id: "my-app" }, [
-        h("p", {}, [`count: ${state.count}`]),
-        h("button", { onClick: increment }, ["increment"]),
-      ]);
+     return h("div", { id: "my-app" }, [
+       h("p", {}, [`count: ${state.count}`]),
+       h("button", { onClick: increment }, ["increment"]),
+     ]);
     };
   },
 });
