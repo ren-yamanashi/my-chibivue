@@ -9,7 +9,7 @@ createRendererで、render関数を生成する
     - コンポーネントの更新を行う(updateComponent)
       - patch処理
         - patch処理を行うタイミングは、レンダー関数が実行された時
-        - elementの時と、textの時で、処理を分ける
+        - elementの時と、textの時とcomponentの時で、処理を分ける
 
 render関数の実行は、createAppAPI関数の実行時に行われる(mount時)
 
