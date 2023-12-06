@@ -3,7 +3,9 @@ import { ComponentInternalInstance, VNode } from "./vnode";
 
 export type Component = ComponentOptions;
 
-export function createComponentInstance(vnode: VNode): ComponentInternalInstance {
+export function createComponentInstance(
+  vnode: VNode
+): ComponentInternalInstance {
   const type = vnode.type as Component;
 
   // NOTE: 本家のVue.jsに合わせてインスタンスを生成した段階ではnullを設定しておく
@@ -15,8 +17,12 @@ export function createComponentInstance(vnode: VNode): ComponentInternalInstance
     subTree: null!,
     update: null!,
     render: null!,
-    isMounted: false,
-  }
 
-  return instance
+    propsOptions: type.props || {},
+    props: {},
+
+    isMounted: false,
+  };
+
+  return instance;
 }

@@ -1,5 +1,6 @@
 import { ReactiveEffect } from "../reactivity/effect";
 import { Component } from "./component";
+import { Props } from "./componentProps";
 
 export type VNodeTypes = string | typeof Text | object;
 
@@ -21,6 +22,8 @@ export interface ComponentInternalInstance {
   render: InternalRenderFunction;
   update: () => void;
   isMounted: boolean;
+  propsOptions: Props;
+  props: Record<string, any>;
 }
 
 export type InternalRenderFunction = {
