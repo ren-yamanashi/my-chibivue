@@ -15,5 +15,6 @@ export const createApp = ((...args) => {
     if (!container) return;
     mount(container);
   };
+  
   return app;
 }) as CreateAppFunction<Element>;
