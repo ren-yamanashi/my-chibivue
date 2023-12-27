@@ -1,16 +1,12 @@
-// NOTE: renderロジックのみを持つオブジェクトを生成するためのファクトリ関数を実装する
-//       Node(DOMに限らず)を扱うオブジェクトはfactory関数の引数として受け取るようにする
-
 import { ReactiveEffect } from "../reactivity/effect";
-import { Component, createComponentInstance } from "./component";
-import { initProps, updateProps } from "./componentProps";
 import {
+  Component,
   ComponentInternalInstance,
   InternalRenderFunction,
-  VNode,
-  createVNode,
-  normalizeVNode,
-} from "./vnode";
+  createComponentInstance,
+} from "./component";
+import { initProps, updateProps } from "./componentProps";
+import { VNode,  normalizeVNode, createVNode, Text } from "./vnode";
 
 export type RootRenderFunction<HostElement = RendererElement> = (
   vnode: Component,
@@ -23,7 +19,7 @@ export interface RendererOptions<
 > {
   patchProp(el: HostElement, key: string, value: any): void;
 
-  createElement(type: string): HostNode;
+  createElement(type: string): HostElement;
 
   createText(text: string): HostNode;
 
@@ -42,11 +38,6 @@ export interface RendererNode {
 
 export interface RendererElement extends RendererNode {}
 
-/**
- * renderロジックのみを持つオブジェクトを生成するためのファクトリ関数
- * @param {RendererOptions}options
- * @returns {RootRenderFunction}1
- */
 export function createRenderer(options: RendererOptions) {
   const {
     patchProp: hostPatchProp,
@@ -66,7 +57,7 @@ export function createRenderer(options: RendererOptions) {
     } else if (typeof type === "object") {
       processComponent(n1, n2, container);
     } else {
-      // dot nothing
+      // do nothing
     }
   };
 
@@ -160,15 +151,14 @@ export function createRenderer(options: RendererOptions) {
     const instance: ComponentInternalInstance = (initialVNode.component =
       createComponentInstance(initialVNode));
 
-    // init props
     const { props } = instance.vnode;
     initProps(instance, props);
 
     const component = initialVNode.type as Component;
     if (component.setup) {
-      instance.render = component.setup(
-        instance.props
-      ) as InternalRenderFunction;
+      instance.render = component.setup(instance.props, {
+        emit: instance.emit,
+      }) as InternalRenderFunction;
     }
 
     setupRenderEffect(instance, initialVNode, container);
@@ -181,15 +171,12 @@ export function createRenderer(options: RendererOptions) {
   ) => {
     const componentUpdateFn = () => {
       const { render } = instance;
-
       if (!instance.isMounted) {
-        // mount process
         const subTree = (instance.subTree = normalizeVNode(render()));
         patch(null, subTree, container);
         initialVNode.el = subTree.el;
         instance.isMounted = true;
       } else {
-        // patch process
         let { next, vnode } = instance;
 
         if (next) {
@@ -213,11 +200,11 @@ export function createRenderer(options: RendererOptions) {
 
     const effect = (instance.effect = new ReactiveEffect(componentUpdateFn));
     const update = (instance.update = () => effect.run());
-    update(); // run effect
+    update();
   };
 
   const updateComponent = (n1: VNode, n2: VNode) => {
-    const instance = (n2.component = n1.component!);
+    const instance = (n2.component = n1.component)!;
     instance.next = n2;
     instance.update();
   };

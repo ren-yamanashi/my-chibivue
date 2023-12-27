@@ -1,10 +1,10 @@
 import { reactive } from "../reactivity";
-import { Data } from "../runtime-dom/component";
-import { ComponentInternalInstance } from "./vnode";
+import { camelize, hasOwn } from "../shared/general";
+import { ComponentInternalInstance, Data } from "./component";
 
-export type Props = Record<string, PropsOptions | null>;
+export type Props = Record<string, PropOptions | null>;
 
-export interface PropsOptions<T = any> {
+export interface PropOptions<T = any> {
   type?: PropType<T> | true | null;
   required?: boolean;
   default?: null | undefined | object;
@@ -14,7 +14,6 @@ export type PropType<T> = { new (...args: any[]): T & {} };
 
 export function initProps(
   instance: ComponentInternalInstance,
-  // NOTE: h関数で渡されたprops
   rawProps: Data | null
 ) {
   const props: Data = {};
@@ -22,11 +21,19 @@ export function initProps(
   instance.props = reactive(props);
 }
 
-export function setFullProps(
+export function updateProps(
   instance: ComponentInternalInstance,
-  // NOTE: h関数で渡されたprops
+  rawProps: Data | null
+) {
+  const { props } = instance;
+  Object.entries(rawProps ?? {}).forEach(([key, value]) => {
+    props[camelize(key)] = value;
+  });
+}
+
+function setFullProps(
+  instance: ComponentInternalInstance,
   rawProps: Data | null,
-  // NOTE: コンポーネントのprops
   props: Data
 ) {
   const options = instance.propsOptions;
@@ -34,17 +41,11 @@ export function setFullProps(
   if (rawProps) {
     for (let key in rawProps) {
       const value = rawProps[key];
-      if (options && options.hasOwnProperty(key)) {
-        props[key] = value;
+      // kebab -> camel
+      let camelKey;
+      if (options && hasOwn(options, (camelKey = camelize(key)))) {
+        props[camelKey] = value;
       }
     }
   }
-}
-
-export function updateProps(
-  instance: ComponentInternalInstance,
-  rawProps: Data | null
-) {
-  const { props } = instance;
-  Object.assign(props, rawProps);
 }

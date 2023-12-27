@@ -1,42 +1,26 @@
-import { ReactiveEffect } from "../reactivity/effect";
-import { Component } from "./component";
-import { Props } from "./componentProps";
+import { ComponentInternalInstance } from "./component";
 
 export type VNodeTypes = string | typeof Text | object;
 
-export const Tex = Symbol();
+export const Text = Symbol();
+
 export interface VNode<HostNode = any> {
   type: VNodeTypes;
   props: VNodeProps | null;
   children: VNodeNormalizedChildren;
+
   el: HostNode | undefined;
-  component?: ComponentInternalInstance | null;
-}
 
-export interface ComponentInternalInstance {
-  type: Component;
-  vnode: VNode;
-  subTree: VNode;
-  next: VNode | null;
-  effect: ReactiveEffect;
-  render: InternalRenderFunction;
-  update: () => void;
-  isMounted: boolean;
-  propsOptions: Props;
-  props: Record<string, any>;
+  component: ComponentInternalInstance | null;
 }
-
-export type InternalRenderFunction = {
-  (): VNodeChild;
-};
 
 export interface VNodeProps {
   [key: string]: any;
 }
 
 export type VNodeNormalizedChildren = string | VNodeArrayChildren;
-
 export type VNodeArrayChildren = Array<VNodeArrayChildren | VNodeChildAtom>;
+
 export type VNodeChild = VNodeChildAtom | VNodeArrayChildren;
 type VNodeChildAtom = VNode | string;
 
