@@ -3,6 +3,7 @@ import { createRenderer } from "../runtime-core";
 import { CreateAppFunction, createAppAPI } from "../runtime-core/apiCreateApp";
 import { nodeOps } from "./nodeOps";
 import { patchProp } from "./patchProp";
+export * from "../runtime-core";
 
 const { render } = createRenderer({...nodeOps, patchProp});
 const _createApp = createAppAPI(render);

@@ -8,9 +8,9 @@ export const generate = ({
   textContent: string;
 }): string => {
   return `return () => {
-    const { h } = ChibiVue;
-    return h("${tag}", { ${Object.entries(props)
-    .map(([key, value]) => `${key}: ${value}`)
-    .join(", ")} }, ["${textContent}"]) 
-  }`;
+  const { h } = ChibiVue;
+  return h("${tag}", { ${Object.entries(props)
+    .map(([k, v]) => `${k}: "${v}"`)
+    .join(", ")} }, ["${textContent}"]);
+}`;
 };
